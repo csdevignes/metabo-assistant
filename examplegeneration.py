@@ -29,12 +29,15 @@ def draw_gene_cpd(db, pathway):
     cpd = random.sample(p_cpd, n_cpd)
     return (gene, cpd)
 
-def draw_example(db):
+def draw_example(db, keeper_pathways):
     '''
-    Randomly pick a pathway entry from the kegg json file, and draw gene and cpd from it
+    Randomly pick a pathway entry from the kegg json file, and draw gene and cpd from it.
+    Already highly represented while not very relevant pathways are excluded
     :return: (pathway, gene, cpd) tuple of lists
     '''
-    pathway = random.choice(list(db.keys()))
+    pathway = 'hsa00524'
+    while db[pathway]["name"] not in keeper_pathways:
+        pathway = random.choice(list(db.keys()))
     name = db[pathway]["name"]
     gene, cpd = draw_gene_cpd(db, pathway)
     return (name, gene, cpd)
@@ -44,7 +47,7 @@ def gen_explanation(tuple, exprompt):
     '''
     Generates a 200 explanation as for why the gene and cpd lists point to a certain metabolic pathway
     :param tuple: (pathway, gene, cpd) tuple
-    :return: text message
+    :return: string, text message
     '''
     pathway, gene, cpd = tuple
     gene_list = (',').join(gene)
@@ -87,10 +90,26 @@ with open('prompts/test_chat_prompt.txt', 'r') as f:
 with open('prompts/example_gen_prompt.txt', 'r') as f:
     explanation_request = f.read()
 
-with open('dataset/train_dataset_lab2.jsonl', 'w', encoding='utf-8') as f:
-    for i in range(200):
+keeper_pathway = ['Phenylalanine metabolism', 'Sulfur metabolism',
+       'Nicotinate and nicotinamide metabolism', 'Linoleic acid metabolism',
+       'Purine metabolism', 'Glycerophospholipid metabolism',
+       'Propanoate metabolism',
+       'Ether lipid metabolism', 'Steroid biosynthesis',
+       'Pentose and glucuronate interconversions', 'Fatty acid elongation',
+       'Pantothenate and CoA biosynthesis', 'Fatty acid metabolism',
+       'D-Amino acid metabolism', 'Folate biosynthesis',
+       'Terpenoid backbone biosynthesis',
+       'Amino sugar and nucleotide sugar metabolism',
+       'Mucin type O-glycan biosynthesis', 'Sphingolipid metabolism',
+       'Lipoic acid metabolism', 'Pyrimidine metabolism',
+       'alpha-Linolenic acid metabolism', 'Nitrogen metabolism',
+       'One carbon pool by folate',
+       'Valine, leucine and isoleucine degradation']
+
+with open('dataset/train_dataset_lab4.jsonl', 'w', encoding='utf-8') as f:
+    for i in range(100):
         print(i)
-        data_ex = draw_example(db)
+        data_ex = draw_example(db, keeper_pathway)
         ex = make_example(data_ex, metab_pathway_request, explanation_request)
         json.dump(ex, f, ensure_ascii=False)
         f.write('\n')
@@ -107,5 +126,5 @@ def merge_jsonl(file1, file2, outfile):
                     except json.JSONDecodeError:
                         print(f"Invalid line : {line}")
 
-# merge_jsonl('dataset/train_dataset_lab2.jsonl', 'dataset/train_dataset_lab198.jsonl',
+# merge_jsonl('dataset/train_dataset_lab3.jsonl', 'dataset/train_dataset_lab4.jsonl',
 #             'dataset/train_dataset_lab.jsonl')
