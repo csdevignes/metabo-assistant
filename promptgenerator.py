@@ -21,12 +21,17 @@ with open('prompts/test_chat_prompt.txt', 'r') as f:
     metab_pathway_request = f.read()
 
 paper_name = "SMF"
-# paper_name = "Whitburn"
+paper_name = "Whitburn"
 condition_name = "3D spheroids + palmitate vs 2D culture"
-# condition_name = "Co-culture with Bone Marrow Stromal Cells vs. Monoculture"
+condition_name = "Bone Microenvironment vs. Primary Prostate Cancer Environment"
 
 pathway, gene_list, compound_list = get_example(paper_name, condition_name)
 prompt = f'{metab_pathway_request}\nList of genes : <<< {gene_list} >>>\nList of compounds : <<< {compound_list} >>>'
 
-print(prompt)
-print(f'\n\nPathway was {pathway}')
+with open('prompts/example_gen_prompt.txt', 'r') as f:
+    explanation_request = f.read()
+
+prompt_exgen = (f'{explanation_request}\nList of genes : <<< {gene_list} >>>\nList of compounds : <<< {compound_list} >>>\n'
+                f'Metabolic pathway : <<< {pathway} >>>')
+
+print(prompt_exgen)

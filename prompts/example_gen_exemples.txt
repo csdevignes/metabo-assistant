@@ -1,0 +1,32 @@
+# Real examples
+
+# 1 - SMF : 3D spheroids + palmitate vs 2D culture
+
+You are a cell metabolism expert which aim is to discover which metabolic pathway is involved in a specific condition.
+In an experiment comparing two conditions, multiple metabolic genes and compounds were altered, and one/several metabolic pathway(s) was/were identified.
+I will give you these information, and you will generate a small text (< 100 words) explaining why this metabolic pathway(s) fits with the altered genes and compounds.
+List of genes : <<< Cpt1a,Kat2a,Acacb,Scd1,Fasn,Hmgcr,Hmgcs1,Acly,Me1,Slc25a1,Got1,Pdk1,Pklr,Idh1,G6pd,Pfkfb3,Eno1,Ldha,Gls,Asns,Fbp1,Pck1,Acat1,Aldoa,Hk2,Pgk1,Tpi1,Tkt,Tald,Pgls,Pcx,Pgd,G6pc,Pc,Got2,Acat2,Hmgcl,Mvk,Mvd,Idi1,Fdft1,Sqle,Lss,Dhcr7,Nsdhl,Ebp,Sc5d,Dhcr24 >>>
+List of compounds : <<< Palmitate,Oleate,Linoleate,Acetyl-CoA,Octanoate,Sodium acetate >>>
+Metabolic pathway : <<< acetyl-CoA production ,fatty acid oxidation >>>
+
+In the given experiment, two metabolic pathways were identified as significantly altered: acetyl-CoA production and fatty acid oxidation. The acetyl-CoA production pathway is implicated by the altered genes Acly, Hmgcr, Hmgcs1, Pdk1, Pklr, and Idh1, as well as the increased levels of Acetyl-CoA and Sodium acetate. Acetyl-CoA is a central metabolite in various biochemical pathways, and its increased production can affect cellular processes such as energy generation and lipid biosynthesis.
+The fatty acid oxidation pathway is indicated by the altered genes Cpt1a, Kat2a, Acacb, Scd1, Fasn, and the increased levels of Palmitate, Oleate, Linoleate, and Octanoate. Fatty acid oxidation is the process by which fatty acids are broken down to produce acetyl-CoA, which can then enter the citric acid cycle to generate energy. The upregulation of genes involved in this pathway and the increased levels of fatty acids suggest that fatty acid oxidation is enhanced in the given condition.
+
+small:
+The metabolic pathways identified in the experiment are acetyl-CoA production and fatty acid oxidation. The alteration of genes such as Cpt1a, Acacb, and Acly, which are involved in fatty acid oxidation and acetyl-CoA production, supports this finding. The presence of altered compounds like palmitate, oleate, linoleate, and acetyl-CoA further substantiates this, as these compounds are key intermediates in these pathways. The changes in genes like Hmgcr, Hmgcs1, and Mvk, involved in cholesterol synthesis, and the presence of compounds like acetyl-CoA and HMG-CoA, suggest a potential link between these pathways and cholesterol metabolism. Overall, the data indicates a significant role for acetyl-CoA production and fatty acid oxidation in the condition studied.
+
+# 2 - Whitburn : Bone Microenvironment vs. Primary Prostate Cancer Environment
+
+You are a cell metabolism expert which aim is to discover which metabolic pathway is involved in a specific condition.
+In an experiment comparing two conditions, multiple metabolic genes and compounds were altered, and one/several metabolic pathway(s) was/were identified.
+I will give you these information, and you will generate a small text (< 150 words) stating which metabolic pathway(s) was/were identified
+and why this fits with the altered genes and compounds.
+List of genes : <<< FH,SDHB,MDH2,NDUFA11,COX4I2,ATP5C1,FBP1,PGLS,RPE,G6PD >>>
+List of compounds : <<< NADPH,NADP+ >>>
+Metabolic pathway : <<< Penthose phosphate pathway >>>
+
+In our investigation, we identified the pentose phosphate pathway (PPP) as the primary metabolic pathway of interest. This conclusion was drawn from the alteration of several key genes and compounds involved in this pathway. Among the genes, G6PD, RPE, and PGLS are directly involved in the PPP, responsible for glucose-6-phosphate dehydrogenase, ribulose-phosphate 3-epimerase, and 6-phosphogluconolactonase activities, respectively. FBP1, although not a part of the PPP, indirectly influences the pathway through fructose-1,6-bisphosphatase activity.
+Furthermore, the altered compounds NADPH and NADP+ are crucial to the PPP. NADP+ is reduced to NADPH in the oxidative phase of the PPP, which is essential for maintaining redox balance and providing reducing power for biosynthetic reactions. The alterations in these genes and compounds suggest a significant shift in the PPP activity, fitting our observation of the altered metabolic state in the given conditions.
+
+small:
+The metabolic pathway identified in this experiment is the Pentose Phosphate Pathway (PPP). This pathway was implicated due to the alterations observed in several genes and compounds associated with it. The genes FBP1 and G6PD are directly involved in the PPP, with FBP1 encoding fructose-1,6-bisphosphatase, a key enzyme in gluconeogenesis that is also involved in the regulation of PPP, and G6PD encoding glucose-6-phosphate dehydrogenase, the rate-limiting enzyme in the PPP. The altered levels of NADPH and NADP+, which are cofactors in the PPP, further support this finding. The changes in other genes such as FH, SDHB, MDH2, NDUFA11, COX4I2, and ATP5C1, which are primarily associated with the citric acid cycle and oxidative phosphorylation, may suggest a crosstalk or regulation between these pathways and the PPP in response to the specific condition.
