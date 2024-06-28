@@ -3,6 +3,8 @@ This script purpose is to generate examples to use for training of the model
 '''
 import json
 import random
+
+import pandas as pd
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
@@ -16,7 +18,8 @@ client = MistralClient(api_key=api_key)
 def draw_gene_cpd(db, pathway):
     '''
     From a kegg pathway entry, draw a random list of genes and compounds involved, of varying length
-    :param pathway:
+    :param db: dict from the json file containing kegg database information
+    :param pathway: string, pathway code
     :return: (gene, cpd) tuple of lists
     '''
     p_genes = db[pathway]['genes']
@@ -29,24 +32,31 @@ def draw_gene_cpd(db, pathway):
     cpd = random.sample(p_cpd, n_cpd)
     return (gene, cpd)
 
-def draw_example(db, keeper_pathways):
+def draw_example(db, pathway_vc):
     '''
     Randomly pick a pathway entry from the kegg json file, and draw gene and cpd from it.
     Already highly represented while not very relevant pathways are excluded
+    :param db: kegg database json with pathways, genes and compounds
+    :param pathway_vc: dict containing the number of example already drawn per pathway
     :return: (pathway, gene, cpd) tuple of lists
     '''
-    pathway = 'hsa00524'
-    while db[pathway]["name"] not in keeper_pathways:
+
+    if sum(pathway_vc.values()) < 968:
+        while pathway_vc[pathway] > 10:
+            pathway = random.choice(list(db.keys()))
+    else:
         pathway = random.choice(list(db.keys()))
+    pathway_vc[pathway] = pathway_vc[pathway]+1
     name = db[pathway]["name"]
     gene, cpd = draw_gene_cpd(db, pathway)
-    return (name, gene, cpd)
+    return (name, gene, cpd, pathway_vc)
 
 # Exemple generation from the data drawn
 def gen_explanation(tuple, exprompt):
     '''
     Generates a 200 explanation as for why the gene and cpd lists point to a certain metabolic pathway
     :param tuple: (pathway, gene, cpd) tuple
+    :param exprompt: string, instructions to generate the example explanation
     :return: string, text message
     '''
     pathway, gene, cpd = tuple
@@ -70,7 +80,6 @@ def make_example(tuple, userprompt, exprompt):
     pathway, gene, cpd = tuple
     gene_list = (',').join(gene)
     compound_list = (',').join(cpd)
-    # For the no_context dataset, userprompt was removed.
     user_content = f'List of genes : <<< {gene_list} >>>\nList of compounds : <<< {compound_list} >>>'
     assistant_content = gen_explanation(tuple, exprompt)
     example = {}
@@ -82,6 +91,21 @@ def make_example(tuple, userprompt, exprompt):
     example["target"] = pathway
     print(f'{pathway} : {len(gene)} Genes and {len(cpd)} compounds. Assistant content : {len(assistant_content)} char.')
     return example
+def create_pathway_valuecount():
+    '''
+    Create a pathway_vc.csv file containing the list of pathway codes and initial value counts (0)
+    '''
+    keggdf = pd.read_json('prompts/pathway_genes_compoundsrf.json', orient='index')
+    vc = {}
+    pvc = {}
+    for i in keggdf.index:
+        name = keggdf.loc[i, 'name']
+        if name in vc :
+            pvc[i] = vc[name]
+        else :
+            pvc[i] = 0
+    pvc = pd.DataFrame.from_dict(pvc, orient='index', columns=['count'])
+    pvc.to_csv('dataset/pathway_vc.csv', index_label='pathway_code')
 
 with open('prompts/pathway_genes_compounds.json', 'r') as jsonfile:
     db = json.load(jsonfile)
@@ -90,29 +114,22 @@ with open('prompts/test_chat_prompt.txt', 'r') as f:
 with open('prompts/example_gen_prompt.txt', 'r') as f:
     explanation_request = f.read()
 
-keeper_pathway = ['Phenylalanine metabolism', 'Sulfur metabolism',
-       'Nicotinate and nicotinamide metabolism', 'Linoleic acid metabolism',
-       'Purine metabolism', 'Glycerophospholipid metabolism',
-       'Propanoate metabolism',
-       'Ether lipid metabolism', 'Steroid biosynthesis',
-       'Pentose and glucuronate interconversions', 'Fatty acid elongation',
-       'Pantothenate and CoA biosynthesis', 'Fatty acid metabolism',
-       'D-Amino acid metabolism', 'Folate biosynthesis',
-       'Terpenoid backbone biosynthesis',
-       'Amino sugar and nucleotide sugar metabolism',
-       'Mucin type O-glycan biosynthesis', 'Sphingolipid metabolism',
-       'Lipoic acid metabolism', 'Pyrimidine metabolism',
-       'alpha-Linolenic acid metabolism', 'Nitrogen metabolism',
-       'One carbon pool by folate',
-       'Valine, leucine and isoleucine degradation']
+# If 'dataset/pathway_vc.csv' was not previously created in TrainDatasetVerif notebook, run this :
+# create_pathway_valuecount()
 
-with open('dataset/train_dataset_lab4.jsonl', 'w', encoding='utf-8') as f:
-    for i in range(100):
+pathway_vc = pd.read_csv('dataset/pathway_vc.csv', index_col='pathway_code').to_dict()['count']
+print(pathway_vc)
+
+with open('dataset/train_dataset_lab2.jsonl', 'w', encoding='utf-8') as f:
+    for i in range(1000):
         print(i)
-        data_ex = draw_example(db, keeper_pathway)
+        name, gene, cpd, pathway_vc = draw_example(db, pathway_vc)
+        data_ex = (name, gene, cpd)
         ex = make_example(data_ex, metab_pathway_request, explanation_request)
         json.dump(ex, f, ensure_ascii=False)
         f.write('\n')
+
+print(pathway_vc)
 
 # Code for merging jsonl in case of multiple generation attempt
 def merge_jsonl(file1, file2, outfile):
@@ -126,6 +143,6 @@ def merge_jsonl(file1, file2, outfile):
                     except json.JSONDecodeError:
                         print(f"Invalid line : {line}")
 
-# merge_jsonl('dataset/train_dataset_lab3.jsonl', 'dataset/train_dataset_lab4.jsonl',
+# merge_jsonl('dataset/train_dataset_lab2.jsonl', 'dataset/train_dataset_lab3.jsonl',
 #             'dataset/train_dataset_lab.jsonl')
 

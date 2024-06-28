@@ -52,16 +52,38 @@ as for why this pathway is associated with these genes and compounds. I used mis
 were OK. This explanation is then added to the dataset jsonl file, together with the userprompt containing genes
 and compounds, without the pathway.
 
-Part of the dataset (200 samples) is labelled with the pathway used to generate the examples, for verification purpose.
-The label is then deleted to form final train dataset.
+The dataset is labelled with the pathway used to generate the examples, for verification purpose.
+The label is then deleted to form the final train dataset.
+
+In order to have a balanced dataset, a method was implemented during example generation, in order to redraw until
+all pathways have at least 11 examples. Once this is reached(968 examples), the remaining examples are drawn randomly.
 
 ### Train dataset verifications
 
-Performed in Jupyter notebook :
-* pathway mentioned in assistant response is the right one (use of labelled dataset)
-* representation of each pathway
-* vagueness of the answer / useless sentences : hypotheses to filter out (as a future plan)
+Performed in Jupyter notebook [TrainDatasetVerif](TrainDatasetVerif.ipynb):
+* pathway mentioned in assistant response is the right one (use of labelled dataset) : OK
+* representation of each pathway : implemented a regulation during example generation (see above) : OK
+* (future) vagueness of the answer / useless sentences : hypotheses to filter out
   * use another LLM to evaluate them
   * use embedding
+  
+## Fine-tuning
+
+Using Mistral API in a Jupyter Notebook. First step is to remove the 'target' field from the data, and to split 
+them in train (90%) and val (10%) jsonl datasets, which are stored in train folder.
+
+* Iter1 : training was performed on a dataset of 500 messages, with 7B model (first test)
+* Iter2 : training was performed on a dataset of 1000 messages, with 7B model. Metrics are recorded
+in Weight and Biases.
+
+### Improvements:
+
+* Find a way to add more metrics to W&B : now only have train loss.
+* See if possible to add text to the training dataset, not message, to add also the raw kegg dataset
+* (future) Work with embedding of the genes/compounds
+
+## Evaluation of the models
+
+
 
 
