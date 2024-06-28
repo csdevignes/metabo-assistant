@@ -79,11 +79,22 @@ in Weight and Biases.
 ### Improvements:
 
 * Find a way to add more metrics to W&B : now only have train loss.
-* See if possible to add text to the training dataset, not message, to add also the raw kegg dataset
+* See if possible to add text to the training dataset, to add also the raw kegg dataset
 * (future) Work with embedding of the genes/compounds
 
 ## Evaluation of the models
 
+Ongoing :
+* Create test dataset
+  * with database examples
+  * with real examples
+* Define evaluation metrics
 
+## Interface to chat with the models
 
-
+A streamlit app was generated to quickly interrogate the model. It is not available on the Cloud, but can be run in 
+local, by downloading [metabo_assistant.py](metabo_assistant.py) and running :
+```
+streamlit run metabo_assistant.py
+```
+Installation of packages from [requirements.txt](requirements.txt) might be needed.
