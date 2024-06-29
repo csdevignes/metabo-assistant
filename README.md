@@ -84,11 +84,40 @@ in Weight and Biases.
 
 ## Evaluation of the models
 
-Ongoing :
-* Create test dataset
-  * with database examples
+Test dataset was created by drawing randomly from KEGG database. It was then presented to different models: mistral 7B,
+mistral small, and 2 models fine-tuned from mistral 7B. First fine-tuned model was trained with 500 examples. 
+Second was trained with 1000 examples and for 1 more step. To be fair to the different models, a short system prompt was
+added to instruct them to find the altered pathway and return less than 200 words.
+
+Responses of the models were then evaluated by mistral-Large (LLM as a judge method), with the following
+criteria as instructions :
+- metric: accuracy
+    * Score 1: The pathway found in output is not even a metabolic pathway.
+    * Score 2: The pathway found in output is a metabolic pathway.
+    * Score 3: The pathway found in output is clearly stated and almost identical to the target pathway (ex: synthesis instead of degradation of the same compound).
+    * Score 4: The pathway found in output is clearly stated and exactly the same as the target pathway (perfect match).
+
+- metric: informativity
+    * Score 1: No or incomplete citation of genes and compounds, or no justification
+    * Score 2: Genes and compounds are cited but are not properly used to justify pathway choice, useless information
+    * Score 3: Information about genes and compounds are exact and used properly to justify pathway choice in output.
+
+- metric: format
+    * Score 1: Output is longer than 200 words and does not include a metabolic pathway.
+    * Score 2: Output is longer than 200 words or does not include a metabolic pathway.
+    * Score 3: Output is shorter than 200 words and include one clearly named metabolic pathway.
+
+![Scores sum per model and metric](figures/combined_graph.png)
+![Accuracy score per model](figures/accuracy_values.png)
+
+The fine-tuning clearly improved the amount of perfect match regarding identified signaling pathway (accuracy score 4).
+It also improves model informativity and answer formatting.
+
+### Improvements
+
+* Test dataset
+  * with database examples : correct issue with random pick and redo
   * with real examples
-* Define evaluation metrics
 
 ## Interface to chat with the models
 
@@ -98,3 +127,8 @@ local, by downloading [metabo_assistant.py](metabo_assistant.py) and running :
 streamlit run metabo_assistant.py
 ```
 Installation of packages from [requirements.txt](requirements.txt) might be needed.
+
+## Improvements (general)
+
+* freeze requirements
+* organize for rerun

@@ -1,0 +1,6 @@
+Several LLM were challenged to deduce from a list of genes and compounds, which metabolic pathways were altered.
+I will give you the inputs (genes, compounds), the target (metabolic pathway true value) and the output from 4 different LLMs.
+Based on the specified evaluation metrics and rubrics, assign an integer score between 1 and 4 to the outputs.
+Return only a JSON object with the LLM number as a key and as a value, a dict containing metric as the key and evaluation score as the value.
+
+# Evaluation metric and rubrics:

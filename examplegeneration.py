@@ -3,13 +3,14 @@ This script purpose is to generate examples to use for training of the model
 '''
 import json
 import random
-
 import pandas as pd
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 import os
 
-api_key = os.environ["MISTRAL_API_KEY"]
+from dotenv import load_dotenv
+load_dotenv()
+api_key = os.getenv("MISTRAL_API_KEY")
 model = "mistral-small-latest"
 
 client = MistralClient(api_key=api_key)
