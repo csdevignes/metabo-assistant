@@ -28,7 +28,7 @@ converted to energy or fat.
 They are composed of enzymes produced from **genes**. These enzymes convert **compounds** (for example sugar) into another
 (for example fat).
 
-![Very simplified view of cell metabolism](figures/schema.png)
+![Very simplified view of cell metabolism](assets/schema.png)
 
 Metabolic pathways are often altered in many diseases. To study these pathways in an exploratory way, researchers rely
 on the measurements of gene expression and compound amounts. Often, they start from a list of genes, and a list of
@@ -107,7 +107,7 @@ them in train (90%) and val (10%) jsonl datasets, which are stored in [train fol
 in Weight and Biases.
   * Model : `ft:open-mistral-7b:5aebfd1c:20240628:de14ae4a`
 
-![Train loss during iter2 of fine-tuning](figures/train_loss_iter2.png)
+![Train loss during iter2 of fine-tuning](assets/train_loss_iter2.png)
 
 ## Evaluation of the models
 
@@ -135,8 +135,8 @@ with the following criteria as instructions :
     * Score 2: Output is longer than 200 words or does not include a metabolic pathway.
     * Score 3: Output is shorter than 200 words and include one clearly named metabolic pathway.
 
-![Scores sum per model and metric](figures/combined_graph.png)
-![Accuracy score per model](figures/accuracy_values.png)
+![Scores sum per model and metric](assets/combined_graph.png)
+![Accuracy score per model](assets/accuracy_values.png)
 
 The fine-tuning clearly improved the amount of perfect matches regarding identified signaling pathway (accuracy score 4).
 It also improved model informativity and answer formatting. More detailed analysis of models scores can be found in
