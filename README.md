@@ -103,8 +103,9 @@ in Weight and Biases.
 
 [Test dataset](test/test.jsonl) was created by drawing randomly from KEGG database, similarly to example generation process.
 It was then presented to different models: mistral 7B, mistral small, and 2 models fine-tuned from mistral 7B (iter1
-and iter2). To be fair to the different models, a short system prompt was added to instruct them to find the altered
-pathway and return less than 200 words.
+and iter2), using [evaluation.py](evaluation.py).
+To be fair to the different models, a short system prompt was added to instruct them to find the altered pathway
+and return less than 200 words. 
 
 Responses of the models were then evaluated by mistral-Large (LLM as a judge method), with the following
 criteria as instructions :
@@ -213,3 +214,4 @@ And finally run the streamlit app:
 ### Chat app
 
 * See if possible to ask for several metabolic pathways guesses from the same list of genes/compounds
+* Add table with list of examples

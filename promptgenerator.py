@@ -4,6 +4,7 @@ This file purpose is to generate prompts to use in mistral chat
 
 import pandas as pd
 import openpyxl
+import sys
 
 def get_example(paper_name, condition_name):
     df_pat = pd.read_excel("prompts/LittData.xlsx", f"{paper_name}_pathways")
@@ -17,21 +18,18 @@ def get_example(paper_name, condition_name):
     cpd = ','.join(cpd)
     return (pathway, gene, cpd)
 
-with open('prompts/test_chat_prompt.txt', 'r') as f:
-    metab_pathway_request = f.read()
+def main(paper_name, condition_name):
+    pathway, gene_list, compound_list = get_example(paper_name, condition_name)
+    with open('prompts/test_chat_prompt.txt', 'r') as f:
+        metab_pathway_request = f.read()
+    prompt = f'{metab_pathway_request}\nList of genes : <<< {gene_list} >>>\nList of compounds : <<< {compound_list} >>>'
+    print(prompt)
 
-paper_name = "SMF"
-paper_name = "Whitburn"
-condition_name = "3D spheroids + palmitate vs 2D culture"
-condition_name = "Bone Microenvironment vs. Primary Prostate Cancer Environment"
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python promptgenerator.py <'paper_name'> <'condition_name'>. Refer to LittData.xlsx for paper and condition names")
+        sys.exit(1)
 
-pathway, gene_list, compound_list = get_example(paper_name, condition_name)
-prompt = f'{metab_pathway_request}\nList of genes : <<< {gene_list} >>>\nList of compounds : <<< {compound_list} >>>'
-
-with open('prompts/example_gen_prompt.txt', 'r') as f:
-    explanation_request = f.read()
-
-prompt_exgen = (f'{explanation_request}\nList of genes : <<< {gene_list} >>>\nList of compounds : <<< {compound_list} >>>\n'
-                f'Metabolic pathway : <<< {pathway} >>>')
-
-print(prompt_exgen)
+    paper_name = sys.argv[1]
+    condition_name = sys.argv[2]
+    main(paper_name, condition_name)

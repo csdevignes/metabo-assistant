@@ -49,15 +49,18 @@ Models fine-tuned to deduce metabolism pathways:
 (ending with f - first model trained on 500 exemples)
 * ft:open-mistral-7b:5aebfd1c:20240628:de14ae4a
 (ending with a - second model trained on 1000 exemples)
+
+Explanations about models [here](https://github.com/csdevignes/metabo-assistant)
 """)
 
 st.selectbox("Model", st.session_state['model_list'], key='model_selection')
 
-st.markdown("""Input list of altered genes and/or list of altered metabolic pathways (any separator)""")
+st.markdown("""Input list of altered genes and/or list of altered metabolic pathways (any separator).
+To find more examples, please visit [this file](https://github.com/csdevignes/metabo-assistant/blob/main/test/test.jsonl)""")
 
 with st.form("Request"):
-    list_genes = st.text_input("List of genes", key="list_genes")
-    list_compounds = st.text_input("List of compounds", key="list_compounds")
+    list_genes = st.text_input("List of genes", key="list_genes", placeholder="G6PD")
+    list_compounds = st.text_input("List of compounds", key="list_compounds", placeholder="NADP, NADPH")
     submitted = st.form_submit_button("Send")
     if submitted:
         model = st.session_state["model_selection"]
