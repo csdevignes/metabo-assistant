@@ -5,21 +5,27 @@ taking place in June 2024.
 
 ___
 
+* [Video presentation](#video-presentation)
 * [Scientific background](#scientific-background)
+  * [Train dataset verifications](#train-dataset-verifications)
+  * [Fine-tuning](#fine-tuning)
 * [Design](#design)
   * [LLM role - application behavior](#llm-role---application-behavior)
   * [Metabolic data collection](#metabolic-data-collection)
   * [Train dataset](#train-dataset)
-  * [Train dataset verifications](#train-dataset-verifications)
-  * [Fine-tuning](#fine-tuning)
 * [Evaluation of the models](#evaluation-of-the-models)
 * [Usage](#usage)
   * [Streamlit Cloud](#streamlit-cloud)
   * [Locally](#locally)
 * [Areas for development](#areas-for-development)
-  * [General](#general)
   * [Fine-tuning](#fine-tuning-1)
   * [Evaluation of the models](#evaluation-of-the-models-1)
+
+## Video presentation
+
+https://github.com/csdevignes/metabo-assistant/assets/159613482/b297ea39-5ae3-4bf6-84b9-9a69074b4f99
+
+> [Download video](https://github.com/csdevignes/metabo-assistant/raw/main/assets/presentation.mp4)
 
 ## Scientific background
 
