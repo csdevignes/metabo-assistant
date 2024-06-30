@@ -12,6 +12,17 @@ Metabolic pathways are often altered in many diseases. To study these pathways i
 on the measurements of gene expression and compound amounts. This will lead to having a list of genes, and a list of
 compound, and wanting to deduce from these the metabolic pathway that is involved (called candidate pathway).
 
+## Usage
+
+An interface was created to quickly interrogate the model. It is not available on the Cloud, but can be run locally,
+by downloading [metabo_assistant.py](metabo_assistant.py) and running :
+```
+streamlit run metabo_assistant.py
+```
+Installation of packages from [requirements.txt](requirements.txt) might be needed.
+
+## How was it made
+
 ### Metabolic data collection
 
 I extracted from scientific publications examples where researcher deduced a metabolic pathway from list of altered
@@ -118,15 +129,6 @@ It also improves model informativity and answer formatting.
 * Test dataset
   * with database examples : correct issue with random pick and redo
   * with real examples
-
-## Interface to chat with the models
-
-A streamlit app was generated to quickly interrogate the model. It is not available on the Cloud, but can be run in 
-local, by downloading [metabo_assistant.py](metabo_assistant.py) and running :
-```
-streamlit run metabo_assistant.py
-```
-Installation of packages from [requirements.txt](requirements.txt) might be needed.
 
 ## Improvements (general)
 
