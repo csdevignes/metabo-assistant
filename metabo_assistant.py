@@ -23,6 +23,7 @@ def load_model_list(client):
 def get_model_answer(model, list_genes, list_compounds):
     user_content = f'List of genes : <<< {list_genes} >>>\nList of compounds : <<< {list_compounds} >>>'
     messages = [
+        ChatMessage(role="system", content="Find the altered pathway, <200 words."),
         ChatMessage(role="user", content=user_content)
         ]
     chat_response = client.chat(
@@ -35,7 +36,21 @@ def get_model_answer(model, list_genes, list_compounds):
 if 'model_list' not in st.session_state:
     st.session_state['model_list'] = load_model_list(client)
 
+st.markdown(""" # Select from the different models :
+
+Mistral models :
+* open-mistral-7b
+* mistral-small-latest
+* mistral-large-latest
+
+Models fine-tuned to deduce metabolism pathways:
+* ft:open-mistral-7b:5aebfd1c:20240627:e63dc09f (first model trained on 500 exemples)
+* ft:open-mistral-7b:5aebfd1c:20240628:de14ae4a (second model trained on 1000 exemples)
+""")
+
 st.selectbox("Model", st.session_state['model_list'], key='model_selection')
+
+st.markdown("""Input list of altered genes and/or list of altered metabolic pathways (any separator)""")
 
 with st.form("Request"):
     list_genes = st.text_input("List of genes", key="list_genes")
