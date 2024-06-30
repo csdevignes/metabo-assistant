@@ -96,7 +96,7 @@ def create_pathway_valuecount():
     '''
     Create a pathway_vc.csv file containing the list of pathway codes and initial value counts (0)
     '''
-    keggdf = pd.read_json('prompts/pathway_genes_compoundsrf.json', orient='index')
+    keggdf = pd.read_json('prompts/pathway_genes_compounds.json', orient='index')
     vc = {}
     pvc = {}
     for i in keggdf.index:

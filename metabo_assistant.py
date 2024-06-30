@@ -44,8 +44,11 @@ Mistral models :
 * mistral-large-latest
 
 Models fine-tuned to deduce metabolism pathways:
-* ft:open-mistral-7b:5aebfd1c:20240627:e63dc09f (first model trained on 500 exemples)
-* ft:open-mistral-7b:5aebfd1c:20240628:de14ae4a (second model trained on 1000 exemples)
+
+* ft:open-mistral-7b:5aebfd1c:20240627:e63dc09f
+(ending with f - first model trained on 500 exemples)
+* ft:open-mistral-7b:5aebfd1c:20240628:de14ae4a
+(ending with a - second model trained on 1000 exemples)
 """)
 
 st.selectbox("Model", st.session_state['model_list'], key='model_selection')
