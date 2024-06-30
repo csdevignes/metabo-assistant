@@ -8,7 +8,7 @@ __pycache__/
 .env
 
 # Jupyter Notebook
-.ipynb_checkpoints
+jupyter/.ipynb_checkpoints
 
 wandb
 venv
