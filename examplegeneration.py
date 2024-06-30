@@ -35,7 +35,7 @@ def draw_gene_cpd(db, pathway):
     cpd = random.sample(p_cpd, n_cpd)
     return (gene, cpd)
 
-def draw_example(db, pathway_vc):
+def draw_example(db, pathway_vc, n_ex):
     '''
     Randomly pick a pathway entry from the kegg json file, and draw gene and cpd from it.
     Condition ensure that the program draw until all pathways have 11 examples.
@@ -44,8 +44,9 @@ def draw_example(db, pathway_vc):
     :return: (pathway, gene, cpd, pathway_vc) where pathway is a string, and gene and cpd are lists
     '''
     pathway = random.choice(list(db.keys()))
-    if sum(pathway_vc.values()) < 968:
-        while pathway_vc[pathway] >= 11:
+    ex_per_pathway = n_ex // len(db)
+    if sum(pathway_vc.values()) < len(db)*ex_per_pathway:
+        while pathway_vc[pathway] >= ex_per_pathway:
             pathway = random.choice(list(db.keys()))
     pathway_vc[pathway] = pathway_vc[pathway]+1
     name = db[pathway]["name"]
@@ -123,7 +124,7 @@ def main(n_examples, destfile):
     with open(destfile, 'w', encoding='utf-8') as f:
         for i in range(n_examples):
             print(i)
-            name, gene, cpd, pathway_vc = draw_example(db, pathway_vc)
+            name, gene, cpd, pathway_vc = draw_example(db, pathway_vc, n_examples)
             data_ex = (name, gene, cpd)
             ex = make_example(data_ex, metab_pathway_request, explanation_request)
             json.dump(ex, f, ensure_ascii=False)
@@ -131,7 +132,7 @@ def main(n_examples, destfile):
 
     df = pd.DataFrame.from_dict(pathway_vc, orient='index', columns=['count'])
     df = df.reset_index().rename(columns={'index': 'pathway_code'})
-    df.to_csv('pathway_vc.csv', index=False)
+    df.to_csv('dataset/pathway_vc.csv', index=False)
 
 # Code for merging jsonl in case of multiple generation attempt
 def merge_jsonl(file1, file2, outfile):

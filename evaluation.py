@@ -4,23 +4,15 @@ This script purpose is to pass a list of test data through different models, and
 
 import os
 import json
+import sys
+
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 from dotenv import load_dotenv
 
 load_dotenv()
 api_key = os.getenv("MISTRAL_API_KEY")
-
 client = MistralClient(api_key=api_key)
-
-entries = []
-with open("test/test_pass.jsonl", 'r') as infile:
-    for line in infile:
-        try:
-            entry = json.loads(line)
-            entries.append(entry)
-        except json.JSONDecodeError:
-            print(f"Ignoring invalid JSON: {line}")
 
 def gen_response(tuple, model):
     '''
@@ -42,30 +34,52 @@ def gen_response(tuple, model):
         messages=messages
     )
     explanation = chat_response.choices[0].message.content
-    print(f'{len(gene)} Genes and {len(cpd)} compounds. Assistant content : {explanation} char.')
+    print(f'{len(gene)} Genes and {len(cpd)} compounds. Assistant {model} content : {len(explanation)} char.')
     return explanation
 
-def test_pass_model(entries, model):
+def item_pass_models(entry, model_list):
     '''
     Call previous function to fill entries with specified model replies
-    :param entries: list of dict (jsonl)
-    :param model: string, model name
+    :param entry: dict (json)
+    :param model_list: list of string, model names
     :return:
     '''
-    for entry in entries:
-        gene = entry["input"]["genes"]
-        cpd = entry["input"]["cpd"]
+    gene = entry["input"]["genes"]
+    cpd = entry["input"]["cpd"]
+    entry["output"] = {}
+    for model in model_list:
         rep = gen_response((gene, cpd), model)
-        # entry["output"] = {}
         entry["output"][model] = rep
-    return entries
+    return entry
 
-model = 'mistral-small-latest'
-test_res = test_pass_model(entries, model)
-with open("test/test_pass5.jsonl", 'w') as outfile:
-    for entry in test_res:
-        json.dump(entry, outfile)
-        outfile.write('\n')
+def main(test_items_file, outfile):
+    entries = []
+    with open(test_items_file, 'r') as infile:
+        for line in infile:
+            try:
+                entry = json.loads(line)
+                entries.append(entry)
+            except json.JSONDecodeError:
+                print(f"Ignoring invalid JSON: {line}")
 
-# for model in client.list_models().data:
-#     print(model.id)
+    model_list = ['open-mistral-7b', 'mistral-small-latest']
+    client_model_list = client.list_models()
+    for item in client_model_list.data:
+        if item.id.startswith('ft'):
+            model_list.append(item.id)
+
+    with open(outfile, 'w') as outfile:
+        for entry in entries:
+            res = item_pass_models(entry, model_list)
+            json.dump(res, outfile)
+            outfile.write('\n')
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python evaluation.py <test item file> <destination_file>\nPlease note that destination file will be overwritten.")
+        sys.exit(1)
+
+    infile = sys.argv[1]
+    outfile = sys.argv[2]
+    main(infile, outfile)
