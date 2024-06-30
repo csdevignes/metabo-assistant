@@ -4,6 +4,8 @@ This script purpose is to have a LLM evaluate the answers of other LLM
 
 import os
 import json, yaml
+import sys
+
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 from dotenv import load_dotenv
@@ -41,33 +43,35 @@ def evaluate_line(prompt):
     eval = chat_response.choices[0].message.content
     return eval
 
-entries = []
-with open("test/test_pass.jsonl", 'r') as infile:
-    for line in infile:
-        try:
-            entry = json.loads(line)
-            entries.append(entry)
-        except json.JSONDecodeError:
-            print(f"Ignoring invalid JSON: {line}")
+def main(testpass_infile, score_outfile):
 
-with open("test/metrics.yaml", 'r') as mf:
-    metrics = yaml.safe_load(mf)
+    entries = []
+    with open(testpass_infile, 'r') as infile:
+        for line in infile:
+            try:
+                entry = json.loads(line)
+                entries.append(entry)
+            except json.JSONDecodeError:
+                print(f"Ignoring invalid JSON: {line}")
 
-with open('prompts/evaluation_prompt.txt', 'r') as f:
-    eval_prompt = f.read()
+    with open("test/metrics.yaml", 'r') as mf:
+        metrics = yaml.safe_load(mf)
 
-for model in client.list_models().data:
-    if model.id.startswith('ft'):
-        print(model)
+    with open('prompts/evaluation_prompt.txt', 'r') as f:
+        eval_prompt = f.read()
 
-print('\n Jobs')
-for job in client.jobs.list().data:
-    print(job)
+    with open(score_outfile, 'w') as outfile:
+        for entry in entries:
+            prompt = gen_eval_prompt(entry, eval_prompt, metrics)
+            eval = evaluate_line(prompt)
+            outfile.write(eval)
+            outfile.write('\n')
 
-with open("test/test_eval2.jsonl", 'w') as outfile:
-    for entry in entries[0:2]:
-        prompt = gen_eval_prompt(entry, eval_prompt, metrics)
-        #eval = evaluate_line(prompt)
-        # outfile.write(eval)
-        # outfile.write('\n')
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python scoring.py <test passed file> <destination_file>\nPlease note that destination file will be overwritten.")
+        sys.exit(1)
 
+    infile = sys.argv[1]
+    outfile = sys.argv[2]
+    main(infile, outfile)

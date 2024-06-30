@@ -176,4 +176,6 @@ Additionally, the citric acid cycle and glucose metabolism pathways may also be 
 
 Overall, the alterations in fatty acid metabolism genes and compounds suggest that the specific condition may be related to dysregulation of lipid metabolism, which could have implications for energy homeostasis and disease development.
 
+> Most of the time, answers from mistral-small model are as correct as mistral-large.
+> For a first proof-of-concept attempt, I used mistral-small to generate the train dataset
 

@@ -23,14 +23,23 @@ ___
 
 ## Scientific background
 
-Inside the cells, metabolic pathways are what determine how nutrient are used, for example if sugar is going to be
+Inside the cells, metabolic **pathways** are what determine how nutrients are used, for example if sugar is going to be
 converted to energy or fat.
-They are composed of genes which can be more or less expressed (meaning there are more or less enzymes produced from
-these genes). Gene-derived enzymes convert compounds (for example sugar) into another (for example fat).
+They are composed of enzymes produced from **genes**. These enzymes convert **compounds** (for example sugar) into another
+(for example fat).
+
+![Very simplified view of cell metabolism](figures/schema.png)
 
 Metabolic pathways are often altered in many diseases. To study these pathways in an exploratory way, researchers rely
-on the measurements of gene expression and compound amounts. Often, we start from a list of genes, and a list of
-compounds, and want to deduce from these the metabolic pathway that is involved.
+on the measurements of gene expression and compound amounts. Often, they start from a list of genes, and a list of
+compounds, and want to deduce from these which metabolic pathway is involved.
+
+### Impact
+
+An AI model trained to accurately identify altered metabolic pathway from experimental results could allow researcher
+to gain significant amount of time. It could also raise interesting candidates, that researchers may not have thought
+of initially. Cell metabolism is very complex and composed of intricated and cross-reacting pathways. Taking advantage
+of **large language models (LLM)** synthesis ability can allow to quickly extract research leads from exploratory datasets.
 
 ## Design
 
@@ -41,8 +50,8 @@ of genes and compound, make interesting and relevant suggestions of altered meta
 
 ### Metabolic data collection
 
-I extracted from a couple scientific publications where researcher deduced a metabolic pathway from list of altered
-genes and compounds (= **real examples**). These are listed in [LittData.xlsx](prompts/LittData.xlsx). References:
+I extracted **real examples** from a couple scientific publications where researcher deduced a metabolic pathway from list of altered
+genes and compounds. These are listed in [LittData.xlsx](prompts/LittData.xlsx). References:
 
 ```
 Altea-Manzano, P., Doglioni, G., Liu, Y., Cuadros, A.M., Nolan, E., Fernández-García, J., Wu, Q., Planque, M., Laue, K.J., Cidre-Aranaz, F., Liu, X.-Z., Marin-Bejar, O., Van Elsen, J., Vermeire, I., Broekaert, D., Demeyer, S., Spotbeen, X., Idkowiak, J., Montagne, A., Demicco, M., Alkan, H.F., Rabas, N., Riera-Domingo, C., Richard, F., Geukens, T., De Schepper, M., Leduc, S., Hatse, S., Lambrechts, Y., Kay, E.J., Lilla, S., Alekseenko, A., Geldhof, V., Boeckx, B., de la Calle Arregui, C., Floris, G., Swinnen, J.V., Marine, J.-C., Lambrechts, D., Pelechano, V., Mazzone, M., Zanivan, S., Cools, J., Wildiers, H., Baud, V., Grünewald, T.G.P., Ben-David, U., Desmedt, C., Malanchi, I., Fendt, S.-M., 2023. A palmitate-rich metastatic niche enables metastasis growth via p65 acetylation resulting in pro-metastatic NF-κB signaling. Nat Cancer 4, 344–364. https://doi.org/10.1038/s43018-023-00513-2
@@ -50,20 +59,20 @@ Whitburn, J., Rao, S.R., Morris, E.V., Tabata, S., Hirayama, A., Soga, T., Edwar
 ```
 
 I also extracted from [KEGG](https://www.kegg.jp) and NCBI databases the list of all metabolic pathways,
-and for each the list of genes and compounds involved (see [kegg-dataextract](https://github.com/csdevignes/kegg-dataextract) repository)
-(= **database examples**).
+and for each the list of genes and compounds involved (see [kegg-dataextract](https://github.com/csdevignes/kegg-dataextract) repository). This database was used
+to generate **database examples**.
 
 While working with the database I realized that some pathways had zero compounds, only genes. Since I was interested
 in crossing compounds and genes information, I excluded them.
 
 ### Test using chat mistral
 
-I first ran some test with mistral chat models to optimize the prompt and better define my case.
+I first ran some test with mistral chat models to optimize the prompt.
 I used the [promptgenerator.py](promptgenerator.py) script to generate prompt from different real examples and then
 tested it with the different mistral models. Test results are listed in [test-chat-results.md](prompts/test_chat_results.md)
 
 Both Mistral Large and Small performed quite well, although they sometimes lacked precision and small model once did not
-find the answer. Fine-tuning the small or 7B model with data from examples can maybe make it more precise
+find the answer. Fine-tuning the small or 7B model with data from examples could make it more precise
 and accurate.
 
 ### Train dataset
@@ -71,18 +80,19 @@ and accurate.
 Because of the lack of time, I could not mine the literature for sufficient real examples to have a train dataset.
 I decided to generate examples from KEGG database data ([pathway_genes_compounds.json](prompts/pathway_genes_compounds.json)).
 This was performed using [examplegeneration.py](examplegeneration.py)
+
 Sets of (pathway, genes, compounds) were randomly drawn from KEGG database, and used to generate an explanation prompt
 as for why this pathway is associated with these genes and compounds. I used mistral small since the chat test results
 were OK. In order to have a balanced dataset, a method was implemented during example generation, in order to redraw until
-all pathways have at least 11 examples. Once this is reached(968 examples), the remaining examples are drawn randomly.
+all pathways have at least 11 examples.
 
-This explanation is then added to the dataset jsonl file, together with the userprompt containing genes
+This explanation is then added to the [dataset](dataset/train_dataset_lab.jsonl) file, together with the userprompt containing genes
 and compounds. The dataset is labelled with the pathway used to generate the examples, for verification purpose.
 The label is then deleted to form the final train dataset.
 
 ### Train dataset verifications
 
-Performed in Jupyter notebook [TrainDatasetVerif](TrainDatasetVerif.ipynb):
+Performed in Jupyter notebook [TrainDatasetVerif](TrainDatasetVerif.ipynb). Verified that :
 * pathway mentioned in assistant response is the right one (use of labelled dataset) : OK
 * representation of each pathway : implemented a regulation during example generation (see above) : OK
 
@@ -107,8 +117,8 @@ and iter2), using [evaluation.py](evaluation.py).
 To be fair to the different models, a short system prompt was added to instruct them to find the altered pathway
 and return less than 200 words. 
 
-Responses of the models were then evaluated by mistral-Large (LLM as a judge method), with the following
-criteria as instructions :
+Responses of the models were then evaluated by mistral-Large (LLM as a judge method) using [scoring.py](scoring.py),
+with the following criteria as instructions :
 - metric: accuracy
     * Score 1: The pathway found in output is not even a metabolic pathway.
     * Score 2: The pathway found in output is a metabolic pathway.
@@ -129,12 +139,13 @@ criteria as instructions :
 ![Accuracy score per model](figures/accuracy_values.png)
 
 The fine-tuning clearly improved the amount of perfect matches regarding identified signaling pathway (accuracy score 4).
-It also improved model informativity and answer formatting.
+It also improved model informativity and answer formatting. More detailed analysis of models scores can be found in
+[Evaluation](Evaluation.ipynb) Notebook, especially discussion about the scores of 1.
 
 ## Usage
 
 An interface was created to quickly interrogate the model. It can be tested by using your own list of genes and compounds,
-or picking some from the [test dataset](test/test.jsonl).
+or by picking some from the [test dataset](test/test.jsonl).
 
 ### Streamlit Cloud
 
@@ -145,6 +156,12 @@ The app is available at https://metabo-assistant.streamlit.app/
 You can run the app locally as well. However please note that you will only be able to access mistral models, not the
 fine-tuned models.
 
+First clone the repository:
+
+```shell
+git clone https://github.com/csdevignes/metabo-assistant.git
+```
+
 > [!WARNING]
 > Before continuing the `MISTRAL_API_KEY` environment variable must be set to
 > your [Mistral API key](https://docs.mindmac.app/how-to.../add-api-key/create-mistral-ai-api-key).
@@ -154,7 +171,7 @@ fine-tuned models.
 > MISTRAL_API_KEY=your_api_key
 > ```
 
-With Docker:
+Then with Docker:
 
 ```shell
 $ docker compose up --build
@@ -168,13 +185,7 @@ streamlit-1  |   Local URL: http://localhost:8501
 streamlit-1  |   Network URL: http://172.18.0.2:8501
 ```
 
-Or clone the repository:
-
-```shell
-git clone https://github.com/csdevignes/metabo-assistant.git
-```
-
-Then set up the environment (here on Windows):
+Or without Docker, set up the environment (here on Windows):
 
 ```shell
 metabo-assistant> python -m venv venv
@@ -195,21 +206,19 @@ And finally run the streamlit app:
 
 ## Areas for development
 
-### General
-
-* organize for rerun
-
 ### Fine-tuning
 
+* Generate more difficult examples, with several pathways involved.
 * Find a way to add more metrics to W&B: now only have train loss.
 * See if possible to add text to the training dataset, to add also the raw kegg dataset
-* (future) Work with embedding of the genes/compounds
+* Try with embedding of the genes/compounds
 
 ### Evaluation of the models
 
 * Test dataset
-  * with database examples: correct issue with random pick and redo
+  * with database examples: representation issue of carbon metabolism
   * with real examples: still to do
+* Manual scoring : implement interface
 
 ### Chat app
 
