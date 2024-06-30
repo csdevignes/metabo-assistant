@@ -1,5 +1,7 @@
-venv
 .ipynb_checkpoints
+wandb
+venv
 .venv
+
 compose.yaml
 Dockerfile
