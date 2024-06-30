@@ -92,13 +92,13 @@ The label is then deleted to form the final train dataset.
 
 ### Train dataset verifications
 
-Performed in Jupyter notebook [TrainDatasetVerif](TrainDatasetVerif.ipynb). Verified that :
+Performed in Jupyter notebook [TrainDatasetVerif](jupyter/TrainDatasetVerif.ipynb). Verified that :
 * pathway mentioned in assistant response is the right one (use of labelled dataset) : OK
 * representation of each pathway : implemented a regulation during example generation (see above) : OK
 
 ### Fine-tuning
 
-Using Mistral API in a Jupyter Notebook. First step is to remove the 'target' field from the data, and to split 
+Using Mistral API in Jupyter Notebook [FineTuning](jupyter/FineTuning.ipynb). First step is to remove the 'target' field from the data, and to split 
 them in train (90%) and val (10%) jsonl datasets, which are stored in [train folder](train/).
 
 * Iter1 : training was performed on a dataset of 500 messages, with 7B model (first test), for 10 steps.
@@ -140,7 +140,7 @@ with the following criteria as instructions :
 
 The fine-tuning clearly improved the amount of perfect matches regarding identified signaling pathway (accuracy score 4).
 It also improved model informativity and answer formatting. More detailed analysis of models scores can be found in
-[Evaluation](Evaluation.ipynb) Notebook, especially discussion about the scores of 1.
+[Evaluation](jupyter/Evaluation.ipynb) Notebook, especially discussion about the scores of 1.
 
 ## Usage
 
